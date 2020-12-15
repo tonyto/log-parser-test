@@ -17,7 +17,26 @@ class LogParser
     output
   end
 
+  def parse_unique
+    result = Hash.new
+    output = ''
+
+    File.foreach(@file_path) do |line|
+      url, ip = line.split(' ')
+      result[url] ? result[url] << ip : result[url] = [ip]
+    end
+
+    result.each{|k, v| output += format_unique_output(k, v)}
+
+    output
+  end
+
   private
+
+  def format_unique_output(key, value)
+    unique_value = value.uniq
+    unique_value.length > 1 ? "#{key} #{unique_value.length} unique views\n" : "#{key} #{unique_value.length} unique view"
+  end
 
   def format_output(key, value)
     value.length > 1 ? "#{key} #{value.length} visits\n" : "#{key} #{value.length} visit"
@@ -27,6 +46,27 @@ end
 RSpec.describe LogParser do
   subject { LogParser.new(file_path) }
   let(:file_path) { '/path_to_file.log' }
+
+  describe '#parse_unique' do
+    context 'all unique visits' do
+      it 'outputs unique views' do
+        allow(File).to receive(:foreach)
+          .and_yield('/help_page/1 646.865.545.408')
+          .and_yield('/help_page/1 646.865.545.407')
+          .and_yield('/help_page/1 646.865.545.406')
+          .and_yield('/career 646.865.555.444')
+          .and_yield('/career 646.865.555.443')
+          .and_yield('/about 646.646.775.909')
+          .and_yield('/about 646.646.775.908')
+
+        expect(subject.parse_unique).to eq(
+          "/help_page/1 3 unique views\n" \
+          "/career 2 unique views\n" \
+          "/about 2 unique views\n"
+        )
+      end
+    end
+  end
 
   describe '#parse' do
     context 'multiple visits for a url' do
