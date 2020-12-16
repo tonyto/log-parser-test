@@ -17,7 +17,7 @@ RSpec.describe AllStrategy do
     it 'output all visit count' do
       expect(subject.parse(parsed_lines)).to have_attributes(
         name: subject.class,
-        output: "/help_page/1 2 visits\n/career 2 visits\n/about 1 visit\n"
+        output: "/career 2 visits\n/help_page/1 2 visits\n/about 1 visit\n"
       )
     end
   end

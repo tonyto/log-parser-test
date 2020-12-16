@@ -17,7 +17,7 @@ RSpec.describe UniqueStrategy do
     it 'output unique visit count' do
       expect(subject.parse(parsed_lines)).to have_attributes(
         name: subject.class,
-        output: "/help_page/1 1 unique view\n/career 2 unique views\n/about 1 unique view\n"
+        output: "/career 2 unique views\n/about 1 unique view\n/help_page/1 1 unique view\n"
       )
     end
   end

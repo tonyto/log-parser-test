@@ -5,7 +5,10 @@ require './lib/strategy/report'
 class UniqueStrategy < BaseStrategy
   def parse(parsed_lines)
     output = ''
-    parsed_lines.each{|k, v| output += format_output(k, v)}
+    parsed_lines
+      .sort_by{|k, v| v.uniq.length }
+      .reverse
+      .each{|k, v| output += format_output(k, v)}
 
     Report.new(self.class, output)
   end
