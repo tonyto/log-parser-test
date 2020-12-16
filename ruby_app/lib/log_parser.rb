@@ -1,16 +1,27 @@
 # frozen_string_literal: true
 
 class LogParser
+  attr_accessor :strategies, :result
+
   def initialize(file_path)
     @file_path = file_path
+    @strategies = [UniqueStrategy, AllStrategy]
+    @result = []
+  end
+
+  def reports
+    strategies.each do |strategy|
+      result.push(strategy.new.parse(parsed_lines))
+    end
+
+    result
   end
 
   def parse
     begin
       File.foreach(@file_path) do |line|
         if valid_line?(line)
-          url, ip = line.split(' ')
-          result[url] ? result[url] << ip : result[url] = [ip]
+          read_line(line)
         else
           errors.push('invalid line')
         end
@@ -24,38 +35,18 @@ class LogParser
     @errors ||= []
   end
 
-  def result
-    @result ||= Hash.new
-  end
-
-  def parse_all
-    output = ''
-
-    result.each{|k, v| output += format_output(k, v)}
-
-    output
-  end
-
-  def parse_unique
-    output = ''
-
-    result.each{|k, v| output += format_unique_output(k, v)}
-
-    output
+  def parsed_lines
+    @parsed_lines ||= Hash.new
   end
 
   private
 
+  def read_line(line)
+    url, ip = line.split(' ')
+    parsed_lines[url] ? parsed_lines[url] << ip : parsed_lines[url] = [ip]
+  end
+
   def valid_line?(line)
     line.split(' ').length == 2
-  end
-
-  def format_unique_output(key, value)
-    unique_value = value.uniq
-    unique_value.length > 1 ? "#{key} #{unique_value.length} unique views\n" : "#{key} #{unique_value.length} unique view\n"
-  end
-
-  def format_output(key, value)
-    value.length > 1 ? "#{key} #{value.length} visits\n" : "#{key} #{value.length} visit\n"
   end
 end
