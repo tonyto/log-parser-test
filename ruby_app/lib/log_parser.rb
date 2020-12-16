@@ -12,6 +12,7 @@ class LogParser
 
   def reports
     extracted_logs = LogExtractor.new.parse(file_path)
+    return extracted_logs[:errors] if extracted_logs[:errors].any?
 
     strategies.each do |strategy|
       result.push(strategy.new.parse(extracted_logs[:parsed_lines]))
