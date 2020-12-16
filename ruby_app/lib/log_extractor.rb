@@ -21,11 +21,11 @@ class LogExtractor
     { parsed_lines: parsed_lines, errors: errors }
   end
 
+  private
+
   def errors
     @errors ||= []
   end
-
-  private
 
   def parsed_lines
     @parsed_lines ||= Hash.new
