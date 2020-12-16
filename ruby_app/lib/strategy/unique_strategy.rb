@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 require './lib/strategy/base_strategy'
+require './lib/strategy/report'
 
 class UniqueStrategy < BaseStrategy
   def parse(parsed_lines)

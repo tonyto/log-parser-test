@@ -1,21 +1,23 @@
 # frozen_string_literal: true
 require './lib/log_extractor'
+require './lib/strategy/unique_strategy'
+require './lib/strategy/all_strategy'
 
 class LogParser
   attr_accessor :strategies, :result, :file_path
 
   def initialize(file_path)
     @file_path = file_path
-    @strategies = [UniqueStrategy, AllStrategy]
+    @strategies = [UniqueStrategy.new, AllStrategy.new]
     @result = []
   end
 
   def reports
-    extracted_logs = LogExtractor.new.parse(file_path)
+    extracted_logs = LogExtractor.new(file_path).parse
     return extracted_logs[:errors] if extracted_logs[:errors].any?
 
     strategies.each do |strategy|
-      result.push(strategy.new.parse(extracted_logs[:parsed_lines]))
+      result.push(strategy.parse(extracted_logs[:parsed_lines]))
     end
 
     result
