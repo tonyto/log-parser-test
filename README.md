@@ -10,6 +10,8 @@ To run the script you will need:
 
 # Usage
 
+`cd ruby_app`
+
 To run tests:
 
 - `bundle install`
